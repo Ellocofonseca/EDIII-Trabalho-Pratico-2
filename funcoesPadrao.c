@@ -31,6 +31,16 @@ void direcionaComando(int codigo)
         compactador();
         break;
 
+    case 7:
+        cria_arq_indices();
+        break;
+
+    case 8:
+        break;
+
+    case 9:
+        break;
+
     default:
         printf(ERRO_PADRAO); // PRINT DA MENSAGEM PADRAO DE ERRO CASO O USUARIO DIGITE UM COMANDO INEXISTENTE
         break;

@@ -3,6 +3,7 @@
         "funcoescriadas.h": "c",
         "funcoesfornecidas.h": "c",
         "funcoes_fornecidas.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "funcoesarvb.h": "c"
     }
 }

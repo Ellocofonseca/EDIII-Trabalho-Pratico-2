@@ -1,6 +1,10 @@
 #ifndef __FUNCOES_CRIADAS__
 #define __FUNCOES_CRIADAS__
 
+//----ORDEM-DA-ARVORE-----
+
+#define m 5
+
 //-------BIBLIOTECAS------
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,6 +49,7 @@ typedef struct
                                 //  As strings nao devem terminar com \0
                                 //  Se sobrar espaço preencher com '$'
 } dados;
+
 
 
 //--------FUNCOES-DO-PROGRAMA------------
