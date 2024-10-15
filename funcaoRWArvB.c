@@ -21,10 +21,13 @@ void escreve_no_arvb(FILE *arquivo,No no){
     fwrite(&no.RRNdoNo, 4, 1, arquivo);
     //escreve os ponteiros e as chaves
     for(i=0;i<m;i++){
-        fwrite(&no.P[i], 1, 1, arquivo);
+        fwrite(&no.P[i], 4, 1, arquivo);
 
         if(i!=m-1)
-            fwrite(&no.C[i], 1, 1, arquivo);
+            fwrite(&no.C[i], 8, 1, arquivo);
+        
+        if(i!=m-1)
+            fwrite(&no.Pr[i], 8, 1, arquivo);
     }
 }
 
@@ -45,10 +48,14 @@ No le_no_arvb(FILE *arquivo){
     fread(&no.RRNdoNo, 4, 1, arquivo);
     //le os ponteiros e as chaves
     for(i=0;i<m;i++){
-        fread(&no.P[i], 1, 1, arquivo);
+        fread(&no.P[i], 4, 1, arquivo);
 
         if(i!=m-1)
-            fread(&no.C[i], 1, 1, arquivo);
+            fread(&no.C[i], 8, 1, arquivo);
+
+        if(i!=m-1)
+            fread(&no.Pr[i], 8, 1, arquivo);
+
     }
     return no;
 }

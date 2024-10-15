@@ -13,6 +13,7 @@ typedef struct{
     int  RRNdoNo;       //RRN do no
     int  P[m];          //ponteiros do no
     long C[m-1];        //chaves do no
+    long Pr[m-1]        //Local do dado referente a chave no arquivo de dados
 
 }No;
 
@@ -24,6 +25,12 @@ typedef struct{
     int  RRNproxNo;     //RRN do proximo no que sera inserido
 
 }CabecalhoArvB;
+
+typedef struct{
+    int encontrado; //variavel que marca se o dado foi encontrado ou nao
+    int BYOFF_dado; //byteoffset do dado relativo a chave (essa variavel pode ou nao ser usada, depende se a funcao eh de busca ou insercao)
+    int RRN_pag;    //RRN da proxima pagina em que a pesquisa sera feita se o dado ainda nao tenha sido encontrado
+}Pesquisa;
 
 long converteNome(char* str);   //funcao que transforma o campo de nome do arquivo de dados em uma chave para os indices da arvore-b
 
@@ -38,8 +45,12 @@ void escreve_no_arvb(FILE *arquivo,No no);
 CabecalhoArvB le_cab_arvb(FILE *arquivo);
 No le_no_arvb(FILE *arquivo);
 
+void driver();
 
+
+void insere_no();
 void insere_chave(long chave,int RRN,char nome_arqindices[31]);
 
+Pesquisa busca_chave(int RRN_raiz,long alvo,char nome_arqindices[31]);
 
 #endif // __FUNCOES__
