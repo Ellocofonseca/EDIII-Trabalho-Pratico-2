@@ -36,9 +36,11 @@ void direcionaComando(int codigo)
         break;
 
     case 8:
+        pesquisa();
         break;
 
     case 9:
+        insere_novo_dado();
         break;
 
     default:
