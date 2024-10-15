@@ -1,6 +1,11 @@
 #include "./funcoesArvB.h"
 #include "./funcoesCriadas.h"
 
+//funcao de busca por um dado dentro do arquivo de indices de acordo com a sua chave,
+//a pesquisa sempre comeca pelo RRN da pagina raiz
+//para essa funcao uma struct foi criada para que a pesquisa retorne varias informacoes
+//assim a funcao pode ser usada tanto para pesquisa de dados no arquivo de dados
+//quanto para a pesquisa na hora de inserir um dado novo na arvore
 Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
     int i;
     No PAGINA;
