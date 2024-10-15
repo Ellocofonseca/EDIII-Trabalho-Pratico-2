@@ -12,5 +12,5 @@ void insere_chave(long chave,int RRN,char nome_arqindices[31]){
 }
 
 void driver(){
-    
+
 }

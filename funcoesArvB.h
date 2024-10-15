@@ -26,6 +26,10 @@ typedef struct{
 
 }CabecalhoArvB;
 
+//----AUXILIAR-PESQUISA----
+//essa struct auxiliar eh usada na hora de fazer pesquisas na arvore B, ela sera usada tanto na hora
+//de fazer pesquisas normais e pesquisas para insercao de dados na arvore, assim possibilitando
+//que a mesma funcao de pesquisa possa ser utilizada em ambos os casos de maneira normal
 typedef struct{
     int encontrado; //variavel que marca se o dado foi encontrado ou nao
     int BYOFF_dado; //byteoffset do dado relativo a chave (essa variavel pode ou nao ser usada, depende se a funcao eh de busca ou insercao)
@@ -36,6 +40,9 @@ long converteNome(char* str);   //funcao que transforma o campo de nome do arqui
 
 void cria_arq_indices();        //funcao que cria o arquivo de indices em arvore-b, FUNCAO 7
 
+void pesquisa();                //funcao que realiza uma busca na arvore para econtrar o BYTEOFFSET de um dado relativo a uma chave no arquivo de dados, FUNCAO 8
+
+void insere_novo_dado();        //funcao que insere um novo dado tanto no arquivo de dados quanto numa arvore B ja existente 
 
 //funcoes usadas para escrever tanto os nos quanto o cabecalho no arquivo de indices
 void escreve_cabecalho_arvb(FILE *arquivo,CabecalhoArvB CAB);
