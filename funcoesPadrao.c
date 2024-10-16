@@ -1,4 +1,5 @@
 #include "./funcoesCriadas.h"
+#include "./funcoesArvB.h"
 
 // funcao que direciona o codigo para cada funcao de acordo com o numero selecionado
 

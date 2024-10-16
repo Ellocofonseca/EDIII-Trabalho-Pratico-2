@@ -1,6 +1,8 @@
 #ifndef __FUNCOES_ARVB__
 #define __FUNCOES_ARVB__
 
+
+#include "./funcoesCriadas.h"
 //----ORDEM-DA-ARVORE-----
 
 #define m 5
@@ -13,7 +15,7 @@ typedef struct{
     int  RRNdoNo;       //RRN do no
     int  P[m];          //ponteiros do no
     long C[m-1];        //chaves do no
-    long Pr[m-1]        //Local do dado referente a chave no arquivo de dados
+    long Pr[m-1];       //Local do dado referente a chave no arquivo de dados
 
 }No;
 

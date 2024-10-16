@@ -24,16 +24,19 @@ void cria_arq_indices(){
     FILE *arquivodados;
     FILE *arquivoindices;
 
-    arquivodados = fopen(nome_arqdados, "r");   //abre o arquivo de dados em modo leitura
+    arquivodados = fopen(nome_arqdados, "rb");   //abre o arquivo de dados em modo leitura
 
-    if(arquivodados==NULL)  //termina a execucao se o arquivo de dados nao existir
+    if(arquivodados==NULL){  //termina a execucao se o arquivo de dados nao existir
+        printf(ERRO_PADRAO);
         return;
+    }
 
     CAB_DADOS = le_cabecalho(arquivodados); //le o cabecalho do arquivo de dados
     fseek(arquivodados,1600,SEEK_SET);      //pula para o inicio dos registros do arquivo de dados
 
     if(CAB_DADOS.status=='0'){              //se o arquivo estiver inconsistente nao executa a funcao e fecha o arquivo
         fclose(arquivodados);
+        printf(ERRO_PADRAO);
         return;
     }
     

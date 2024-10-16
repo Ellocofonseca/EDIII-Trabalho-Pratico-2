@@ -32,9 +32,10 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
             return PESQUISA;
         }
         if(PAGINA.C[i]<alvo){
-            if(i==m-1){                         //caso a pesquisa tenha chegado ao ultimo dado possivel de uma pagina 
-                PESQUISA.encontrado=0;          //e nao tenha encontado o alvo retorna a proxima pagina de pesquisa
-                PESQUISA.RRN_pag=PAGINA.P[m];   //que é a relativa ao RRN em P[m].
+            if(i==PAGINA.nroChavesNo-1){                         //caso a pesquisa tenha chegado ao ultimo dado possivel de uma pagina 
+                PESQUISA.encontrado=0;                           //e nao tenha encontado o alvo retorna a proxima pagina de pesquisa
+                PESQUISA.RRN_pag=PAGINA.P[PAGINA.nroChavesNo];   //que é a relativa ao RRN em P[PAGINA.nroChavesNo].
+                return PESQUISA;
             }
 
             continue;//se a chave atual for menor que a chave sendo buscada pula para a proxima chave da pagina, caso a situacao anterior nao tenha ocorrido
