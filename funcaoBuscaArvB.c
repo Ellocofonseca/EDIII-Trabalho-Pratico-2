@@ -25,7 +25,7 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
     PAGINA = le_no_arvb(arquivo);
     fclose(arquivo);
 
-    for(i=0;i<PAGINA.nroChavesNo;i++){
+    for(i=0;i<PAGINA.nroChavesNo;i++){          //checa todas as chaves inseridas na pagina
         if(PAGINA.C[i]==alvo){
             PESQUISA.encontrado=1;              //se a chave atual for a desejada marca que encontrou
             PESQUISA.BYOFF_dado=PAGINA.Pr[i];   //e salva o BYTEOFFSET (no arquivo de dados) do dado relativo a chave na pesquisa, se houver
@@ -40,9 +40,9 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
 
             continue;//se a chave atual for menor que a chave sendo buscada pula para a proxima chave da pagina, caso a situacao anterior nao tenha ocorrido
         }
-        if (PAGINA.C[i]>alvo){
+        if (PAGINA.C[i]>alvo){              //se a chave atual for maior que a chave desejada pula para a pagina apontada anterior à chave atual
             PESQUISA.encontrado=0;
-            PESQUISA.RRN_pag=PAGINA.P[i];
+            PESQUISA.RRN_pag=PAGINA.P[i];   //nova pesquisa sera feita na pagina P[i]
             return PESQUISA;
         }
         
