@@ -56,8 +56,10 @@ void escreve_no_arvb(FILE *arquivo,No no);
 CabecalhoArvB le_cab_arvb(FILE *arquivo);
 No le_no_arvb(FILE *arquivo);
 
-//funcao que realiza a insercao de uma chave num arquivo de indices determinado
-void insere_chave(long chave,long byteoffset,char nome_arqindices[31]);
+//funcoes que realizam a insercao de chaves num arquivo de indices determinado
+int insere_chave(long chave,long byteoffset,char nome_arqindices[31],int raiz);
+void cria_primeira_raiz(char nome_arqindices[31]);
+
 
 //funcao que realiza a busca na arvore b tanto em casos de pesquisa de RRN do arquivo de dados quanto em casos de insercao
 Pesquisa busca_chave(int RRN_raiz,long alvo,char nome_arqindices[31]);

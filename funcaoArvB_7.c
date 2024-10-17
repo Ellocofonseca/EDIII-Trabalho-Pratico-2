@@ -68,7 +68,13 @@ void cria_arq_indices(){
         byteoffset = (long)(160 + RRN*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
 
         //CRIA A ARVORE B
-        //insere_chave(chave,byteoffset,nome_arqindices);      //funcao que insere a chave no arquivo com a arvore
+        //cria o no raiz
+        if(CAB_ARVB.noRaiz==-1){
+            cria_primeira_raiz(nome_arqindices);
+            CAB_ARVB.noRaiz=0;
+        }
+        //insere a chave atual
+        CAB_ARVB.noRaiz=insere_chave(chave,byteoffset,nome_arqindices,CAB_ARVB.noRaiz);      //funcao que insere a chave no arquivo com a arvore
         
     }
     fclose(arquivodados);   //fecha o arquivo de dados apos ter terminado de ler tudo dele e feito as insercoes
@@ -77,7 +83,6 @@ void cria_arq_indices(){
     arquivoindices = fopen(nome_arqindices,"rb+");  //abre o arquivo em rb+ para reescrever o cabecalho
 
     CAB_ARVB.status='1';
-    //CAB_ARVB.noRaiz=-1;
     //CAB_ARVB.RRNproxNo=0;
     escreve_cabecalho_arvb(arquivoindices,CAB_ARVB);//atualiza o cabecalho do arquivo
 

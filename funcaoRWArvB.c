@@ -23,11 +23,10 @@ void escreve_no_arvb(FILE *arquivo,No no){
     for(i=0;i<m;i++){
         fwrite(&no.P[i], 4, 1, arquivo);
 
-        if(i!=m-1)
+        if(i!=m-1){
             fwrite(&no.C[i], 8, 1, arquivo);
-        
-        if(i!=m-1)
             fwrite(&no.Pr[i], 8, 1, arquivo);
+        }
     }
 }
 
