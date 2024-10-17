@@ -9,7 +9,6 @@
 int main(){
 
     int comando;                //variavel de comando
-
     scanf("%d",&comando);       //leitura do comando que sera executado
     direcionaComando(comando);  //direciona o programa para cada funcao de acordo com o nro de comando
 

@@ -8,12 +8,12 @@ void cria_arq_indices(){
     //variaveis de cabecalho e de dado de cada tipo de arquivo
     cabecalho CAB_DADOS;
     dados     DADO;
-
     CabecalhoArvB CAB_ARVB;
     No            NO;
 
     //variaveis do rrn de cada registro do arquivo de dados e para a criacao da chave do dado
-    int RRN;
+    int RRN, RRN_raiz;
+    long byteoffset;
     char *linha;
     char *nome;
     long chave;
@@ -65,13 +65,22 @@ void cria_arq_indices(){
 
         chave=converteNome(nome);       //cria a chave com a funcao fornecida
 
+        byteoffset = (long)(160 + RRN*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
+
         //CRIA A ARVORE B
-        //insere_chave(chave,RRN,nome_arqindices);      //funcao que insere a chave no arquivo com a arvore
+        //insere_chave(chave,byteoffset,nome_arqindices);      //funcao que insere a chave no arquivo com a arvore
         
     }
-    fclose(arquivodados);   //fecha o arquivo de dados apos ter terminado de ler tudo dele
+    fclose(arquivodados);   //fecha o arquivo de dados apos ter terminado de ler tudo dele e feito as insercoes
 
     //ATUALIZACAO DO CABECALHO DO ARQUIVO DE INDICES
+    arquivoindices = fopen(nome_arqindices,"rb+");  //abre o arquivo em rb+ para reescrever o cabecalho
 
+    CAB_ARVB.status='1';
+    //CAB_ARVB.noRaiz=-1;
+    //CAB_ARVB.RRNproxNo=0;
+    escreve_cabecalho_arvb(arquivoindices,CAB_ARVB);//atualiza o cabecalho do arquivo
+
+    fclose(arquivoindices);  
     binarioNaTela(nome_arqindices); //binario da tela mostrando o resultado
 }

@@ -1,7 +1,7 @@
 #include "./funcoesArvB.h"
 #include "./funcoesCriadas.h"
 
-
+//FUNCAO 8
 //essa funcao realiza a pesquisa de um registro com base no nome da especie desejada
 //para isso a pesquisa eh feita em um arquivo de indices em formato arvore-b, assim achando a localizacao
 //do registro no arquivo de dados e exibindo esse dado
@@ -26,7 +26,7 @@ void pesquisa(){
     char campo[21];
     long chave;
 
-    FILE *arquivodados;
+    FILE *arquivodados; 
     FILE *arquivoindices;
 
     scanf("%s",nome_arqdados);
@@ -69,11 +69,11 @@ void pesquisa(){
     fclose(arquivoindices);         //fecha o arquivo de indices para poder usar a funcao busca_chave
 
     rrn_pesquisa=CAB_ARVB.noRaiz;   //pesquisa comeca pelo no raiz
-    
     while (rrn_pesquisa!=-1 || PESQUISA.encontrado==1)        //se o no da pesquisa chegar ao fim e nao tiver encontrado a chave, sai do loop
     {
+        
         PESQUISA=busca_chave(rrn_pesquisa,chave,nome_arqindices);   //faz a pesquisa na pagina atual
-
+        
         if(PESQUISA.encontrado==1)  //se encontrou a chave sai do loop
             break;
 

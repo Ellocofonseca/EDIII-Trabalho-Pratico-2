@@ -25,6 +25,8 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
     PAGINA = le_no_arvb(arquivo);
     fclose(arquivo);
 
+    //printf("%lu %lu %lu %lu %lu\n",PAGINA.C[0],PAGINA.C[1],PAGINA.C[2],PAGINA.C[3],PAGINA.C[4]);
+
     for(i=0;i<PAGINA.nroChavesNo;i++){          //checa todas as chaves inseridas na pagina
         if(PAGINA.C[i]==alvo){
             PESQUISA.encontrado=1;              //se a chave atual for a desejada marca que encontrou
