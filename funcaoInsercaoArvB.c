@@ -34,7 +34,7 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
 
     if (rrn_atual!=-1 || PESQUISA.encontrado==1)        //se o no da pesquisa chegar ao fim e nao tiver encontrado a chave, inicia a volta da recursao
     {   
-        PESQUISA=busca_chave(rrn_pesquisa,chave,nome_arqindices);   //faz a pesquisa na pagina atual
+        PESQUISA=busca_chave(rrn_atual,chave,nome_arqindices);   //faz a pesquisa na pagina atual
         AUX_P=PESQUISA;
         //teoricamente teria que criar uma parada caso a chave ja exista no arquivo, porem nao faz parte do trabalho
         rrn_pesquisa=PESQUISA.RRN_pag;//se nao tiver encontrado na pagina atual pula para a proxima pagina indicada na pesquisa
