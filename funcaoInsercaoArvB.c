@@ -63,10 +63,14 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
 
         if(PAGINA.nroChavesNo<=m-2)  //caso haja espaco na pagina atual para inserir a chave, insere ela e retorna promovido=-1
         {
+            //reordena a pagina
 
-
-            PESQUISA.chave_promovida=-1;
-            return PESQUISA;
+            arquivo=fopen(nome_arqindices,"rb+");        //abre em modo para reescrever a pagina reordenada
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);    //fseek na posicao de reescrita
+            escreve_no_arvb(arquivo,PAGINA);             //reescreve a pagina atualizada
+            fclose(arquivo);                                //fecha o arquivo
+            PESQUISA.chave_promovida=-1;                 //sem mais promocoes
+            return PESQUISA;                             //retorna pequisa com promocao=-1;
 
         }else if(PAGINA.nroChavesNo==m-1)    //se nao houver espaco precisa fazer split e promover uma chave, aqui checa se aconteceu split da raiz
         {
