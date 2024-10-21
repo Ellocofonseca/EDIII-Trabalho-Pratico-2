@@ -36,10 +36,12 @@ typedef struct{
     int encontrado; //variavel que marca se o dado foi encontrado ou nao
     int BYOFF_dado; //byteoffset do dado relativo a chave (essa variavel pode ou nao ser usada, depende se a funcao eh de busca ou insercao)
     int RRN_pag;    //RRN da proxima pagina em que a pesquisa sera feita se o dado ainda nao tenha sido encontrado
-    
+
                     //usados na pesquisa de insercao
-    int eh_folha;   //indica se a pagina final eh um no folha
-    int ocupacao;   //indica a ocupacao da pagina 
+    long chave_promovida;
+    int p_dir_no_promovido;
+    int nova_raiz;
+    int nova_pagina;
 }Pesquisa;
 
 long converteNome(char* str);   //funcao que transforma o campo de nome do arquivo de dados em uma chave para os indices da arvore-b
@@ -57,8 +59,8 @@ CabecalhoArvB le_cab_arvb(FILE *arquivo);
 No le_no_arvb(FILE *arquivo);
 
 //funcoes que realizam a insercao de chaves num arquivo de indices determinado
-int insere_chave(long chave,long byteoffset,char nome_arqindices[31],int raiz);
-void cria_primeira_raiz(char nome_arqindices[31]);
+Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rrn_atual,int raiz_original);
+void cria_raiz(FILE *arqindices);
 
 
 //funcao que realiza a busca na arvore b tanto em casos de pesquisa de RRN do arquivo de dados quanto em casos de insercao

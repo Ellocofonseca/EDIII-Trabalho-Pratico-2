@@ -27,8 +27,6 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
 
     if(PAGINA.nroChavesNo==0){
         PESQUISA.encontrado=0;
-        PESQUISA.eh_folha=1;
-        PESQUISA.ocupacao=0;
         PESQUISA.RRN_pag=-1;
     }
 

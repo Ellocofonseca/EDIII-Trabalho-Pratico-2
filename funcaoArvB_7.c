@@ -4,6 +4,7 @@
 void cria_arq_indices(){
     char nome_arqdados[31];
     char nome_arqindices[31];
+    Pesquisa PESQ;
 
     //variaveis de cabecalho e de dado de cada tipo de arquivo
     cabecalho CAB_DADOS;
@@ -12,7 +13,7 @@ void cria_arq_indices(){
     No            NO;
 
     //variaveis do rrn de cada registro do arquivo de dados e para a criacao da chave do dado
-    int RRN, RRN_raiz;
+    int RRN;
     long byteoffset;
     char *linha;
     char *nome;
@@ -50,7 +51,7 @@ void cria_arq_indices(){
     fclose(arquivoindices);                         //fecha o arquivo apos reservar o cabecalho
 
     RRN=-1;
-    //loop de leitura dos registros do arquivo de dados
+    //loop de leitura dos registros do arquivo de dados e insercao das chaves no arq de indices
     while(1){
 
         DADO=le_registro(arquivodados); //le o dado do arquivo de dados e atualiza o RRN relativo a esse dado
@@ -68,14 +69,21 @@ void cria_arq_indices(){
         byteoffset = (long)(160 + RRN*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
 
         //CRIA A ARVORE B
-        //cria o no raiz
+        //se a raiz nao existir ainda cria ela no arquivo
         if(CAB_ARVB.noRaiz==-1){
-            cria_primeira_raiz(nome_arqindices);
+            arquivoindices = fopen(nome_arqindices,"ab");
+            fseek(arquivoindices,93,SEEK_SET);
+            cria_raiz(arquivoindices);
             CAB_ARVB.noRaiz=0;
+            CAB_ARVB.RRNproxNo=1;
+            fclose(arquivoindices);
         }
-        //insere a chave atual
-        CAB_ARVB.noRaiz=insere_chave(chave,byteoffset,nome_arqindices,CAB_ARVB.noRaiz);      //funcao que insere a chave no arquivo com a arvore
-        
+
+        PESQ=insere_chave(chave,byteoffset,nome_arqindices,CAB_ARVB.noRaiz,CAB_ARVB.noRaiz);
+
+        CAB_ARVB.noRaiz=PESQ.nova_raiz;         //atualiza a raiz caso ela tenha sofrido split  
+        CAB_ARVB.RRNproxNo+=PESQ.nova_pagina;   //aumenta o rrn do proximo no caso tenham ocorrido splits
+
     }
     fclose(arquivodados);   //fecha o arquivo de dados apos ter terminado de ler tudo dele e feito as insercoes
 
@@ -83,7 +91,6 @@ void cria_arq_indices(){
     arquivoindices = fopen(nome_arqindices,"rb+");  //abre o arquivo em rb+ para reescrever o cabecalho
 
     CAB_ARVB.status='1';
-    //CAB_ARVB.RRNproxNo=0;
     escreve_cabecalho_arvb(arquivoindices,CAB_ARVB);//atualiza o cabecalho do arquivo
 
     fclose(arquivoindices);  
