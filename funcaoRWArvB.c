@@ -49,11 +49,10 @@ No le_no_arvb(FILE *arquivo){
     for(i=0;i<m;i++){
         fread(&no.P[i], 4, 1, arquivo);
 
-        if(i!=m-1)
+        if(i!=m-1){
             fread(&no.C[i], 8, 1, arquivo);
-
-        if(i!=m-1)
             fread(&no.Pr[i], 8, 1, arquivo);
+        }
 
     }
     return no;

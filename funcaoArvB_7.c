@@ -69,8 +69,7 @@ void cria_arq_indices(){
 
         chave=converteNome(nome);       //cria a chave com a funcao fornecida
 
-        byteoffset = (long)(160 + RRN*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
-
+        byteoffset = (long)(1600 + RRN*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
         //CRIA A ARVORE B
         //se a raiz nao existir ainda cria ela no arquivo
         if(CAB_ARVB.noRaiz==-1){
@@ -80,7 +79,7 @@ void cria_arq_indices(){
             CAB_ARVB.RRNproxNo=1;
         }
 
-        PESQ=insere_chave(chave,byteoffset,nome_arqindices,CAB_ARVB.noRaiz,CAB_ARVB.noRaiz);
+        PESQ=insere_chave(chave,byteoffset,arquivoindices,CAB_ARVB.noRaiz,CAB_ARVB.noRaiz);
 
         CAB_ARVB.noRaiz=PESQ.nova_raiz;         //atualiza a raiz caso ela tenha sofrido split  
         CAB_ARVB.RRNproxNo+=PESQ.nova_pagina;   //aumenta o rrn do proximo no caso tenham ocorrido splits
@@ -89,7 +88,9 @@ void cria_arq_indices(){
     fclose(arquivodados);   //fecha o arquivo de dados apos ter terminado de ler tudo dele e feito as insercoes
 
     //ATUALIZACAO DO CABECALHO DO ARQUIVO DE INDICES
-    fseek(arquivodados,0,SEEK_SET);
+    fclose(arquivoindices);
+    
+    arquivoindices=fopen(nome_arqindices,"rb+");
     CAB_ARVB.status='1';
     escreve_cabecalho_arvb(arquivoindices,CAB_ARVB);//atualiza o cabecalho do arquivo
 

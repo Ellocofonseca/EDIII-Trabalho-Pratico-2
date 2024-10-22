@@ -70,7 +70,7 @@ void pesquisa(){
     while (rrn_pesquisa!=-1 || PESQUISA.encontrado==1)        //se o no da pesquisa chegar ao fim e nao tiver encontrado a chave, sai do loop
     {
         
-        PESQUISA=busca_chave(rrn_pesquisa,chave,nome_arqindices);   //faz a pesquisa na pagina atual
+        PESQUISA=busca_chave(rrn_pesquisa,chave,arquivoindices);   //faz a pesquisa na pagina atual
         
         if(PESQUISA.encontrado==1)  //se encontrou a chave sai do loop
             break;

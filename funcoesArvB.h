@@ -80,4 +80,7 @@ Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh
 //funcao que realiza a busca na arvore b tanto em casos de pesquisa de RRN do arquivo de dados quanto em casos de insercao
 Pesquisa busca_chave(int RRN_raiz,long alvo,FILE *arquivo);
 
+
+void print(No PAGINA);
+
 #endif // __FUNCOES__

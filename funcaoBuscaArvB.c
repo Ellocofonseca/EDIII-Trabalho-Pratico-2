@@ -11,7 +11,6 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,FILE *arquivo){
     No PAGINA;
     Pesquisa PESQUISA;
 
-    FILE *arquivo;
 
     
     if(RRN_pagina==-1){
@@ -26,8 +25,9 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,FILE *arquivo){
     if(PAGINA.nroChavesNo==0){
         PESQUISA.encontrado=0;
         PESQUISA.RRN_pag=-1;
-    }
+    return PESQUISA;
 
+    }
     //printf("%lu %lu %lu %lu %lu\n",PAGINA.C[0],PAGINA.C[1],PAGINA.C[2],PAGINA.C[3],PAGINA.C[4]);
 
     for(i=0;i<PAGINA.nroChavesNo;i++){          //checa todas as chaves inseridas na pagina
