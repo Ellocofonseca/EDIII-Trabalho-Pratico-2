@@ -66,8 +66,6 @@ void pesquisa(){
 
     chave=converteNome(nome);       //cria a chave com o nome da especie
 
-    fclose(arquivoindices);         //fecha o arquivo de indices para poder usar a funcao busca_chave
-
     rrn_pesquisa=CAB_ARVB.noRaiz;   //pesquisa comeca pelo no raiz
     while (rrn_pesquisa!=-1 || PESQUISA.encontrado==1)        //se o no da pesquisa chegar ao fim e nao tiver encontrado a chave, sai do loop
     {
@@ -79,6 +77,7 @@ void pesquisa(){
 
         rrn_pesquisa=PESQUISA.RRN_pag;//se nao tiver encontrado na pagina atual pula para a proxima pagina indicada na pesquisa
     }
+    fclose(arquivoindices);
 
     if(rrn_pesquisa==-1){       //se nao tiver encontrado o registro printa que nao encontrou
         printf(ERRO_REGISTRO);

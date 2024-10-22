@@ -72,12 +72,12 @@ CabecalhoArvB le_cab_arvb(FILE *arquivo);
 No le_no_arvb(FILE *arquivo);
 
 //funcoes que realizam a insercao de chaves num arquivo de indices determinado
-Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rrn_atual,int raiz_original);
+Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int raiz_original);
 void cria_raiz(FILE *arqindices);
 No reordena_pagina(No PAGINA);
 Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh_raiz, int eh_folha);
 
 //funcao que realiza a busca na arvore b tanto em casos de pesquisa de RRN do arquivo de dados quanto em casos de insercao
-Pesquisa busca_chave(int RRN_raiz,long alvo,char nome_arqindices[31]);
+Pesquisa busca_chave(int RRN_raiz,long alvo,FILE *arquivo);
 
 #endif // __FUNCOES__

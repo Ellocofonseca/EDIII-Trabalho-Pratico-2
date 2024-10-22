@@ -52,6 +52,9 @@ void cria_arq_indices(){
 
     RRN=-1;
     //loop de leitura dos registros do arquivo de dados e insercao das chaves no arq de indices
+
+
+    arquivoindices = fopen(nome_arqindices,"rb+");  //abre o arquivo para realizar as pesquisas insercoes e reescritas que serao feitas
     while(1){
 
         DADO=le_registro(arquivodados); //le o dado do arquivo de dados e atualiza o RRN relativo a esse dado
@@ -71,12 +74,10 @@ void cria_arq_indices(){
         //CRIA A ARVORE B
         //se a raiz nao existir ainda cria ela no arquivo
         if(CAB_ARVB.noRaiz==-1){
-            arquivoindices = fopen(nome_arqindices,"ab");
             fseek(arquivoindices,93,SEEK_SET);
             cria_raiz(arquivoindices);
             CAB_ARVB.noRaiz=0;
             CAB_ARVB.RRNproxNo=1;
-            fclose(arquivoindices);
         }
 
         PESQ=insere_chave(chave,byteoffset,nome_arqindices,CAB_ARVB.noRaiz,CAB_ARVB.noRaiz);
@@ -88,8 +89,7 @@ void cria_arq_indices(){
     fclose(arquivodados);   //fecha o arquivo de dados apos ter terminado de ler tudo dele e feito as insercoes
 
     //ATUALIZACAO DO CABECALHO DO ARQUIVO DE INDICES
-    arquivoindices = fopen(nome_arqindices,"rb+");  //abre o arquivo em rb+ para reescrever o cabecalho
-
+    fseek(arquivodados,0,SEEK_SET);
     CAB_ARVB.status='1';
     escreve_cabecalho_arvb(arquivoindices,CAB_ARVB);//atualiza o cabecalho do arquivo
 

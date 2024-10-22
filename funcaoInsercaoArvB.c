@@ -22,24 +22,22 @@ void cria_raiz(FILE *arqindices){
 }
 
 
-Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rrn_atual,int raiz_original){
+Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int raiz_original){
     int nova_raiz;
     int rrn_pesquisa;
-    Pesquisa PESQUISA, AUX_P;
+    Pesquisa PESQUISA;
     No PAGINA;
     Split SPLIT;
-    FILE *arquivo;
 
     PESQUISA.nova_pagina=0;
 
 
     if (rrn_atual!=-1 || PESQUISA.encontrado==1)        //se o no da pesquisa chegar ao fim e nao tiver encontrado a chave, inicia a volta da recursao
     {   
-        PESQUISA=busca_chave(rrn_atual,chave,nome_arqindices);   //faz a pesquisa na pagina atual
-        AUX_P=PESQUISA;
+        PESQUISA=busca_chave(rrn_atual,chave,arquivo);   //faz a pesquisa na pagina atual
         //teoricamente teria que criar uma parada caso a chave ja exista no arquivo, porem nao faz parte do trabalho
         rrn_pesquisa=PESQUISA.RRN_pag;//se nao tiver encontrado na pagina atual pula para a proxima pagina indicada na pesquisa
-        PESQUISA = insere_chave(chave,byteoffset,nome_arqindices[31],rrn_pesquisa,raiz_original);
+        PESQUISA = insere_chave(chave,byteoffset,arquivo,rrn_pesquisa,raiz_original);
     }
     //quando chegar no fim da pesquisa (raiz=-1) a funcao pula pra ca, quando esse caso retornar as recursoes partem daqui tambem
 
@@ -58,10 +56,8 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
     }
     else//se houver chave promovida tem que acontecer split ou insercao normal
     {
-        arquivo=fopen(nome_arqindices,"rb");        //le a pagina atual para saber oq tem nela para entao tomar a decisao de como inserir
-        fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
+        fseek(arquivo,93*(1+rrn_atual),SEEK_SET);   //move o ponteiro para ler a pagina do arquivo
         PAGINA=le_no_arvb(arquivo);
-        fclose(arquivo);
 
         if(PAGINA.nroChavesNo<=m-2)  //caso haja espaco na pagina atual para inserir a chave, insere ela e retorna promovido=-1
         {
@@ -72,10 +68,8 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
             PAGINA.nroChavesNo++;
             PAGINA=reordena_pagina(PAGINA);
 
-            arquivo=fopen(nome_arqindices,"rb+");        //abre em modo para reescrever a pagina reordenada
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);    //fseek na posicao de reescrita
             escreve_no_arvb(arquivo,PAGINA);             //reescreve a pagina atualizada
-            fclose(arquivo);                                //fecha o arquivo
             PESQUISA.chave_promovida=-1;                 //sem mais promocoes
             return PESQUISA;                             //retorna pequisa com promocao=-1;
 
@@ -84,11 +78,11 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
         {
             //reordena as paginas de acordo com o split delas, abre para escrita no fim do arquivo e escreve as paginas novas
             SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,1);
-            arquivo=fopen(nome_arqindices,"ab");
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
+            fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
             escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
-            fclose(arquivo);
             PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
             PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
             PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
@@ -98,11 +92,11 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
         else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='0' && rrn_atual==raiz_original)   //splir raiz
         {
             SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,0);
-            arquivo=fopen(nome_arqindices,"ab");
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
+            fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
             escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
-            fclose(arquivo);
             PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
             PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
             PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
@@ -111,11 +105,10 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
         else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='1')   //split no folha
         {
             SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,1);
-
-            arquivo=fopen(nome_arqindices,"ab");
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA QUE PERMANECE
+            fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
-            fclose(arquivo);
 
             PESQUISA.chave_promovida=SPLIT.C_promovido;
             PESQUISA.byoff_promovido=SPLIT.Pr_promovido;
@@ -128,10 +121,10 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
         {
             SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,0);
 
-            arquivo=fopen(nome_arqindices,"ab");
-            escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
+            escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE    
+            fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
-            fclose(arquivo);
 
             PESQUISA.chave_promovida=SPLIT.C_promovido;
             PESQUISA.byoff_promovido=SPLIT.Pr_promovido;
@@ -140,6 +133,7 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
             return PESQUISA;
 
         }
+        
     }   
 }
 

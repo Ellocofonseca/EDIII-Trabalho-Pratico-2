@@ -6,7 +6,7 @@
 //para essa funcao uma struct foi criada para que a pesquisa retorne varias informacoes
 //assim a funcao pode ser usada tanto para pesquisa de dados no arquivo de dados
 //quanto para a pesquisa na hora de inserir um dado novo na arvore
-Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
+Pesquisa busca_chave(int RRN_pagina,long alvo,FILE *arquivo){
     int i;
     No PAGINA;
     Pesquisa PESQUISA;
@@ -20,10 +20,8 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,char nome_arqindices[31]){
     }
 
     //abre o arquivo em leitura, pula para o local da pesquisa e le a pagina toda
-    arquivo=fopen(nome_arqindices,"rb");
     fseek(arquivo,93*(1+RRN_pagina),SEEK_SET);
     PAGINA = le_no_arvb(arquivo);
-    fclose(arquivo);
 
     if(PAGINA.nroChavesNo==0){
         PESQUISA.encontrado=0;
