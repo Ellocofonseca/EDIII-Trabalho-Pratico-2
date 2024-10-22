@@ -27,6 +27,7 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
     int rrn_pesquisa;
     Pesquisa PESQUISA, AUX_P;
     No PAGINA;
+    Split SPLIT;
     FILE *arquivo;
 
     PESQUISA.nova_pagina=0;
@@ -81,32 +82,65 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
         }
         else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='1' && rrn_atual==raiz_original)   //split no folha + raiz
         {
-            
-
-            PESQUISA.nova_pagina+=2;
+            //reordena as paginas de acordo com o split delas, abre para escrita no fim do arquivo e escreve as paginas novas
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,1);
+            arquivo=fopen(nome_arqindices,"ab");
+            escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
+            escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
+            escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
+            fclose(arquivo);
+            PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
+            PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
+            PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
             return PESQUISA;
 
         }
+        else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='0' && rrn_atual==raiz_original)   //splir raiz
+        {
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,0);
+            arquivo=fopen(nome_arqindices,"ab");
+            escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
+            escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
+            escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
+            fclose(arquivo);
+            PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
+            PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
+            PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
+            return PESQUISA;
+        }
         else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='1')   //split no folha
         {
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,1);
 
-            
+            arquivo=fopen(nome_arqindices,"ab");
+            escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA QUE PERMANECE
+            escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
+            fclose(arquivo);
+
+            PESQUISA.chave_promovida=SPLIT.C_promovido;
+            PESQUISA.byoff_promovido=SPLIT.Pr_promovido;
+            PESQUISA.p_dir_promovido=SPLIT.P_promovido;        
             PESQUISA.nova_pagina+=1;
             return PESQUISA;
 
         }
         else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='0')   //split fora no folha
         {
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,0);
 
-            
+            arquivo=fopen(nome_arqindices,"ab");
+            escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
+            escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
+            fclose(arquivo);
+
+            PESQUISA.chave_promovida=SPLIT.C_promovido;
+            PESQUISA.byoff_promovido=SPLIT.Pr_promovido;
+            PESQUISA.p_dir_promovido=SPLIT.P_promovido;
             PESQUISA.nova_pagina+=1;
             return PESQUISA;
 
         }
-        
-     
     }   
-
 }
 
 No reordena_pagina(No PAGINA)
@@ -136,6 +170,37 @@ No reordena_pagina(No PAGINA)
     }
 
     return PAGINA;
+}
+
+Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh_raiz, int eh_folha){
+    Split SPLIT;
+
+    if (eh_raiz==1 && eh_folha==1) //caso de split da primeira raiz  
+    {
+        
+
+
+    }
+    else if (eh_raiz==1 && eh_folha==0) //split de outras raizes
+    {
+        
+        
+    }
+    else if(eh_raiz==0 && eh_folha==1)                //split no folha generico
+    {
+
+
+
+    }
+    else if(eh_raiz==0 && eh_folha==0)               //split no interior generico
+    {
+
+
+
+    }
+    
+
+    return SPLIT;
 }
 
 // P1 C1 Pr1 | P2 C2 Pr2 | P3 C3 Pr3 | P4 C4 Pr4 | P5 
