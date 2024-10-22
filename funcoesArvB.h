@@ -39,7 +39,8 @@ typedef struct{
 
                     //usados na pesquisa de insercao
     long chave_promovida;
-    int p_dir_no_promovido;
+    long byoff_promovido;
+    int p_dir_promovido;
     int nova_raiz;
     int nova_pagina;
 }Pesquisa;
@@ -61,7 +62,7 @@ No le_no_arvb(FILE *arquivo);
 //funcoes que realizam a insercao de chaves num arquivo de indices determinado
 Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rrn_atual,int raiz_original);
 void cria_raiz(FILE *arqindices);
-
+No reordena_pagina(No PAGINA);
 
 //funcao que realiza a busca na arvore b tanto em casos de pesquisa de RRN do arquivo de dados quanto em casos de insercao
 Pesquisa busca_chave(int RRN_raiz,long alvo,char nome_arqindices[31]);

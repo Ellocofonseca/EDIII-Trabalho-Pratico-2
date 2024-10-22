@@ -45,7 +45,8 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
     if(rrn_atual==-1)//quando chegar no fim da pesquisa retorna a PRIMEIRA chave como promovida para voltar na recursao e sem ponteiro para filho
     {
         PESQUISA.chave_promovida=chave;
-        PESQUISA.p_dir_no_promovido=-1;
+        PESQUISA.byoff_promovido=byteoffset;
+        PESQUISA.p_dir_promovido=-1;
         return PESQUISA;
     }
 
@@ -56,14 +57,19 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
     }
     else//se houver chave promovida tem que acontecer split ou insercao normal
     {
-        arquivo=fopen(nome_arqindices,"rb");        //le a pagina atual para saber oq tem nela
+        arquivo=fopen(nome_arqindices,"rb");        //le a pagina atual para saber oq tem nela para entao tomar a decisao de como inserir
         fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
         PAGINA=le_no_arvb(arquivo);
         fclose(arquivo);
 
         if(PAGINA.nroChavesNo<=m-2)  //caso haja espaco na pagina atual para inserir a chave, insere ela e retorna promovido=-1
         {
-            //reordena a pagina
+            //reordena a pagina com a chave nova
+            PAGINA.C[PAGINA.nroChavesNo]=PESQUISA.chave_promovida;
+            PAGINA.P[PAGINA.nroChavesNo+1]=PESQUISA.p_dir_promovido;
+            PAGINA.Pr[PAGINA.nroChavesNo]=PESQUISA.byoff_promovido;
+            PAGINA.nroChavesNo++;
+            PAGINA=reordena_pagina(PAGINA);
 
             arquivo=fopen(nome_arqindices,"rb+");        //abre em modo para reescrever a pagina reordenada
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);    //fseek na posicao de reescrita
@@ -72,12 +78,66 @@ Pesquisa insere_chave(long chave,long byteoffset,char nome_arqindices[31],int rr
             PESQUISA.chave_promovida=-1;                 //sem mais promocoes
             return PESQUISA;                             //retorna pequisa com promocao=-1;
 
-        }else if(PAGINA.nroChavesNo==m-1)    //se nao houver espaco precisa fazer split e promover uma chave, aqui checa se aconteceu split da raiz
+        }
+        else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='1' && rrn_atual==raiz_original)   //split no folha + raiz
+        {
+            
+
+            PESQUISA.nova_pagina+=2;
+            return PESQUISA;
+
+        }
+        else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='1')   //split no folha
         {
 
+            
+            PESQUISA.nova_pagina+=1;
             return PESQUISA;
+
         }
+        else if(PAGINA.nroChavesNo==m-1 && PAGINA.folha=='0')   //split fora no folha
+        {
+
+            
+            PESQUISA.nova_pagina+=1;
+            return PESQUISA;
+
+        }
+        
      
     }   
 
 }
+
+No reordena_pagina(No PAGINA)
+{
+    int i,j;
+    long C_aux, Pr_aux;
+    int P_aux;
+    for (int i = 0; i < PAGINA.nroChavesNo - 1; i++) {
+        for (int j = 0; j < PAGINA.nroChavesNo - i - 1; j++) {
+            //reordena com bubblesort (sim), fazendo com que os ponteiros a direita de cada chave sejam trocados
+            if (PAGINA.C[j] > PAGINA.C[j + 1]){ 
+                C_aux=PAGINA.C[j];
+                P_aux=PAGINA.P[j+1];
+                Pr_aux=PAGINA.Pr[j];
+
+                PAGINA.C[j]=PAGINA.C[j+1];
+                PAGINA.P[j+1]=PAGINA.C[j+2];
+                PAGINA.Pr[j]=PAGINA.C[j+1];
+                
+                PAGINA.C[j+1]=C_aux;
+                PAGINA.P[j+2]=P_aux;
+                PAGINA.Pr[j+1]=Pr_aux;
+            }
+
+
+        }
+    }
+
+    return PAGINA;
+}
+
+// P1 C1 Pr1 | P2 C2 Pr2 | P3 C3 Pr3 | P4 C4 Pr4 | P5 
+
+// 0 1 | 2 3 4 -> chave 2 sobe, esquerda aponta pra pagina antiga e direita aponta pra pagina nova
