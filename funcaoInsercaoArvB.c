@@ -18,7 +18,6 @@ void cria_raiz(FILE *arqindices){
     }
     //escreve o primeiro no zerado na arvore como folha;
     escreve_no_arvb(arqindices,NO);
-
 }
 
 
@@ -30,7 +29,6 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
     Split SPLIT;
 
     PESQUISA.nova_pagina=0;
-
 
     if (rrn_atual!=-1 || PESQUISA.encontrado==1)        //se o no da pesquisa chegar ao fim e nao tiver encontrado a chave, inicia a volta da recursao
     {   
@@ -56,52 +54,81 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
     }
     else//se houver chave promovida tem que acontecer split ou insercao normal
     {
-        //PROBLEMA AQUI
+        
         fseek(arquivo,93*(1+rrn_atual),SEEK_SET);   //move o ponteiro para ler a pagina do arquivo
         PAGINA=le_no_arvb(arquivo);
-
-            print(PAGINA);
-        if(PAGINA.nroChavesNo<=m-2)  //caso haja espaco na pagina atual para inserir a chave, insere ela e retorna promovido=-1
+        if(PAGINA.nroChavesNo<=m-2)  //caso haja espaco na pagina atual para inserir a chave, insere ela e retorna promovido=-1 (ok)
         {
             //reordena a pagina com a chave nova
             PAGINA.C[PAGINA.nroChavesNo]=PESQUISA.chave_promovida;
-            PAGINA.P[PAGINA.nroChavesNo]=PESQUISA.p_dir_promovido;
+            PAGINA.P[PAGINA.nroChavesNo+1]=PESQUISA.p_dir_promovido;
             PAGINA.Pr[PAGINA.nroChavesNo]=PESQUISA.byoff_promovido;
             PAGINA.nroChavesNo++;
-            print(PAGINA);
             PAGINA=reordena_pagina(PAGINA);
-            print(PAGINA);
-            printf("\n");
+
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);    //fseek na posicao de reescrita
             escreve_no_arvb(arquivo,PAGINA);             //reescreve a pagina atualizada
+
+            fseek(arquivo,-93,SEEK_CUR);
+            PAGINA=le_no_arvb(arquivo);
+            printf("INSERCAO NORMAL: %ld\n",chave);
+            print(PAGINA);
+            printf("\n");
+
             PESQUISA.chave_promovida=-1;                 //sem mais promocoes
+            PESQUISA.nova_raiz=raiz_original;            //raiz inalterada
             return PESQUISA;                             //retorna pequisa com promocao=-1;
 
         }
-        else if(PAGINA.nroChavesNo==m-1 && rrn_atual==raiz_original && PAGINA.folha=='1')   //split raiz+folha
+        else if(PAGINA.nroChavesNo==m-1 && rrn_atual==raiz_original && PAGINA.folha=='1')   //split raiz+folha (ok)
         {
             //reordena as paginas de acordo com o split delas, abre para escrita no fim do arquivo e escreve as paginas novas
-            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,1);
-            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,1,arquivo);
+            fseek(arquivo,93,SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
-            fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
             escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
-            PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
+
+            PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA RAIZ
             PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
             PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
+
+            printf("SPLIT RAIZ+FOLHA: %ld\n",chave);
+            fseek(arquivo,93,SEEK_SET);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            printf("\n");
+
+
             return PESQUISA;
 
         }
         else if(PAGINA.nroChavesNo==m-1 && rrn_atual==raiz_original && PAGINA.folha=='0')   //split raiz nao folha
         {
             //reordena as paginas de acordo com o split delas, abre para escrita no fim do arquivo e escreve as paginas novas
-            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,0);
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,1,0,arquivo);
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA (RAIZ->FOLHA) QUE PERMANECE
             fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
             escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
+
+            printf("SPLIT RAIZ: %ld\n",chave);
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            fseek(arquivo,-93*2,SEEK_END);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            printf("\n");
+
+
             PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
             PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
             PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
@@ -110,31 +137,56 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
         }
         else if(PAGINA.nroChavesNo==m-1 && rrn_atual!=raiz_original && PAGINA.folha=='0')   //split nao eh folha nem raiz
         {
-            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,0);
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,0,arquivo);
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA QUE PERMANECE
             fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
 
+            printf("SPLIT GENERICO: %ld\n",chave);
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            fseek(arquivo,-93,SEEK_END);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            printf("Promovido: %ld",SPLIT.C_promovido);
+            printf("\n");
+
+
+
             PESQUISA.chave_promovida=SPLIT.C_promovido;
             PESQUISA.byoff_promovido=SPLIT.Pr_promovido;
             PESQUISA.p_dir_promovido=SPLIT.P_promovido;        
             PESQUISA.nova_pagina+=1;
+            PESQUISA.nova_raiz=raiz_original;
             return PESQUISA;
 
         }
-        else if(PAGINA.nroChavesNo==m-1 && rrn_atual!=raiz_original && PAGINA.folha=='1')   //split eh folha
+        else if(PAGINA.nroChavesNo==m-1 && rrn_atual!=raiz_original && PAGINA.folha=='1')   //split eh folha    (OK)
         {
-            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,1);
+            SPLIT=ordena_split(PAGINA,PESQUISA.chave_promovida,PESQUISA.byoff_promovido,PESQUISA.p_dir_promovido,0,1,arquivo);
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA QUE PERMANECE
             fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
 
+            printf("SPLIT FOLHA: %ld\n",chave);
+            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            fseek(arquivo,-93,SEEK_END);
+            PAGINA=le_no_arvb(arquivo);
+            print(PAGINA);
+            printf("Promovido: %ld",SPLIT.C_promovido);
+            printf("\n");
+
+
             PESQUISA.chave_promovida=SPLIT.C_promovido;
             PESQUISA.byoff_promovido=SPLIT.Pr_promovido;
             PESQUISA.p_dir_promovido=SPLIT.P_promovido;        
             PESQUISA.nova_pagina+=1;
+            PESQUISA.nova_raiz=raiz_original;
             return PESQUISA;
 
         }
@@ -171,7 +223,7 @@ No reordena_pagina(No PAGINA)
     return PAGINA;
 }
 
-Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh_raiz, int eh_folha){
+Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh_raiz, int eh_folha, FILE *arquivo){
     Split SPLIT;
     int i,j;
     long Cs[m],Prs[m];
@@ -179,9 +231,9 @@ Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh
     long C_aux, Pr_aux;
     int P_aux;
 
-
-    for(i=0;i<m;i++){       //coloca os dados da pagina para fazer a ordenacao
-        Ps[i]=PAGINA.C[i];
+     //coloca os dados da pagina para fazer a ordenacao
+    for(i=0;i<m;i++){      
+        Ps[i]=PAGINA.P[i];
         if(i!=m-1){
             Cs[i]=PAGINA.C[i];
             Prs[i]=PAGINA.Pr[i];
@@ -212,34 +264,84 @@ Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh
 
         }
     }
-    for(i=0;i<(int)(m/2);i++){
-        SPLIT.PAG1.C[i]=Cs[i];
-        SPLIT.PAG1.P[i]=Ps[i];
-        SPLIT.PAG1.Pr[i]=Prs[i];
+
+    // coloca os dados nas respectivas paginas resultantes do split
+    for (i = 0; i < m; i++)
+    {
+        if (i < (int)(m / 2))
+        {
+            SPLIT.PAG1.C[i] = Cs[i];
+            SPLIT.PAG1.P[i] = Ps[i];
+            SPLIT.PAG1.Pr[i] = Prs[i];
+        }
+        if (i >= (int)(m / 2))
+        {
+            SPLIT.PAG1.P[i] = -1;
+
+            if (i != m - 1)
+            {
+                SPLIT.PAG1.C[i] = -1;
+                SPLIT.PAG1.Pr[i] = -1;
+            }
+        }
     }
-    SPLIT.PAG1.nroChavesNo=(int)(m/2);
-    SPLIT.PAG1.RRNdoNo=PAGINA.RRNdoNo;
-    SPLIT.PAG1.folha=PAGINA.folha;
+    SPLIT.PAG1.nroChavesNo=(int)(m/2);  //nova qtd de chaves dentro do no
+    SPLIT.PAG1.RRNdoNo=PAGINA.RRNdoNo;  //rrn do no eh o que veio da pagina
+    SPLIT.PAG1.folha=PAGINA.folha;      //status de folha ou nao tambem vem da pagina anterior
 
-    for(i=(int)(m/2)+2;i<m+1;i++){
-        SPLIT.PAG2.C[i]=Cs[i];
-        SPLIT.PAG2.P[i]=Ps[i];
-        SPLIT.PAG2.Pr[i]=Prs[i];
+    //pagina que sera criada apos
+    //os dados dessa pagina sao os da metade superior, tirando o que foi promovido
+    for (i = 0; i < m+1; i++)
+    {
+        if (i > (int)(m / 2))
+        {
+            SPLIT.PAG2.C[i-3] = Cs[i];
+            SPLIT.PAG2.P[i-3] = Ps[i];
+            SPLIT.PAG2.Pr[i-3] = Prs[i];
+        }
+        if(i<(int)(m/2)){
+            SPLIT.PAG2.C[i+3] = -1;
+            SPLIT.PAG2.P[i+2] = -1;
+            SPLIT.PAG2.Pr[i+2] = -1;
+        }
+
     }
-    SPLIT.PAG2.nroChavesNo=(int)(m+1-(m/2)-2);
-    SPLIT.PAG2.nroChavesNo=SPLIT.PAG1.RRNdoNo++;
+    SPLIT.PAG2.C[2] = -1;
+    SPLIT.PAG2.Pr[2] = -1;
+    SPLIT.PAG2.P[m-1]=-1;
+
+    if((eh_raiz==1 && eh_folha==0) || (eh_raiz==0 && eh_folha==0)){
+        SPLIT.PAG1.P[2] = Ps[2];
+    }
+    
+    fseek(arquivo,-93,SEEK_END);
+    PAGINA=le_no_arvb(arquivo); //le ultima pagina do arquivo para saber o ultimo rrn, assim pegando os valores para os proximos rrns
+    SPLIT.PAG2.nroChavesNo=(int)(m/2);
+    SPLIT.PAG2.RRNdoNo=PAGINA.RRNdoNo;
+    SPLIT.PAG2.RRNdoNo+=1;
 
 
+
+    
     if (eh_raiz==1) //caso de split de raiz
     {
-        SPLIT.PAG3.C[0]=Cs[(int)(m/2)+1];
-        SPLIT.PAG3.P[0]=Ps[SPLIT.PAG1.RRNdoNo];
-        SPLIT.PAG3.P[1]=Ps[SPLIT.PAG2.RRNdoNo];
-        SPLIT.PAG3.Pr[0]=Prs[(int)(m/2)+1];
-        SPLIT.PAG3.nroChavesNo=1;
-        SPLIT.PAG3.folha='0';
-        SPLIT.PAG3.nroChavesNo=SPLIT.PAG2.RRNdoNo++;
-        if (eh_folha==1)
+        SPLIT.PAG3.C[0]=Cs[(int)(m/2)];     //chave promovida
+        SPLIT.PAG3.P[0]=SPLIT.PAG1.RRNdoNo; //ponteiro a esquerda aponta pra pagina anterior
+        SPLIT.PAG3.Pr[0]=Prs[(int)(m/2)];   //byteoffset referente a chave promovida
+        SPLIT.PAG3.nroChavesNo=1;           //no contem apenas uma chave
+        SPLIT.PAG3.folha='0';               //no nao eh folha
+        SPLIT.PAG3.RRNdoNo=PAGINA.RRNdoNo;  //rrn da pagina eh o da pagina atual+2
+        SPLIT.PAG3.RRNdoNo+=2;
+        for(i=1;i<m;i++){                   //zerando o resto
+            SPLIT.PAG3.P[i]=-1;
+            if(i!=m-1){
+                SPLIT.PAG3.C[i]=-1;
+                SPLIT.PAG3.Pr[i]=-1;
+            }
+        }
+        SPLIT.PAG3.P[1]=SPLIT.PAG2.RRNdoNo; //ponteiro a direita aponta pra pagina que foi criada
+
+        if (eh_folha==1)                    //dependendo se a pagina do split for folha ou nao determina se o irmao eh folha ou n tambem
         {
             SPLIT.PAG2.folha='1';
         }
@@ -249,20 +351,20 @@ Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh
         
 
     }
-    else if (eh_raiz==0)    //caso de split abaixo da raiz EM NO FOLHA
+    else if (eh_raiz==0)    //caso de split abaixo da raiz
     {
-        SPLIT.C_promovido=Cs[(int)(m/2)+1];
-        SPLIT.P_promovido=Ps[(int)(m/2)+1];
-        SPLIT.Pr_promovido=Prs[(int)(m/2)+1];
+        SPLIT.C_promovido=Cs[(int)(m/2)];
+        SPLIT.P_promovido=SPLIT.PAG2.RRNdoNo;
+        SPLIT.Pr_promovido=Prs[(int)(m/2)];
         if (eh_folha==1)
         {
             SPLIT.PAG2.folha='1';
         }
-        if(eh_folha==0){
+        if(eh_folha==0)
+        {
             SPLIT.PAG2.folha='0';
         }
     }
-
 
     return SPLIT;
 }

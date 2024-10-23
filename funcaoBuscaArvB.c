@@ -21,7 +21,6 @@ Pesquisa busca_chave(int RRN_pagina,long alvo,FILE *arquivo){
     //abre o arquivo em leitura, pula para o local da pesquisa e le a pagina toda
     fseek(arquivo,93*(1+RRN_pagina),SEEK_SET);
     PAGINA = le_no_arvb(arquivo);
-
     if(PAGINA.nroChavesNo==0){
         PESQUISA.encontrado=0;
         PESQUISA.RRN_pag=-1;

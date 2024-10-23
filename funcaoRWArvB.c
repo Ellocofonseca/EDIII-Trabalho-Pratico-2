@@ -15,7 +15,7 @@ void escreve_cabecalho_arvb(FILE *arquivo,CabecalhoArvB CAB){
 
 void escreve_no_arvb(FILE *arquivo,No no){
     int i;
-
+    
     fwrite(&no.folha, 1, 1, arquivo);
     fwrite(&no.nroChavesNo, 4, 1, arquivo);
     fwrite(&no.RRNdoNo, 4, 1, arquivo);
