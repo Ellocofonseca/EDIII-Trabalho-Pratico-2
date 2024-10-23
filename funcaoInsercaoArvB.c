@@ -69,12 +69,6 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
             fseek(arquivo,93*(1+rrn_atual),SEEK_SET);    //fseek na posicao de reescrita
             escreve_no_arvb(arquivo,PAGINA);             //reescreve a pagina atualizada
 
-            fseek(arquivo,-93,SEEK_CUR);
-            PAGINA=le_no_arvb(arquivo);
-            printf("INSERCAO NORMAL: %ld\n",chave);
-            print(PAGINA);
-            printf("\n");
-
             PESQUISA.chave_promovida=-1;                 //sem mais promocoes
             PESQUISA.nova_raiz=raiz_original;            //raiz inalterada
             return PESQUISA;                             //retorna pequisa com promocao=-1;
@@ -93,15 +87,6 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
             PESQUISA.nova_pagina+=2;                //AUMENTA EM 2 O NRO DE PAGINAS CRIADAS
             PESQUISA.chave_promovida=-1;            //SEM MAIS CHAVES PROMOVIDAS
 
-            printf("SPLIT RAIZ+FOLHA: %ld\n",chave);
-            fseek(arquivo,93,SEEK_SET);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            printf("\n");
 
 
             return PESQUISA;
@@ -117,16 +102,6 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
             escreve_no_arvb(arquivo,SPLIT.PAG3);    //ESCREVE A PAGINA RAIZ NOVA
 
-            printf("SPLIT RAIZ: %ld\n",chave);
-            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            fseek(arquivo,-93*2,SEEK_END);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            printf("\n");
 
 
             PESQUISA.nova_raiz=SPLIT.PAG3.RRNdoNo;  //ATUALIZA O RRN DA NOVA RAIZ
@@ -142,16 +117,6 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA QUE PERMANECE
             fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
-
-            printf("SPLIT GENERICO: %ld\n",chave);
-            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            fseek(arquivo,-93,SEEK_END);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            printf("Promovido: %ld",SPLIT.C_promovido);
-            printf("\n");
 
 
 
@@ -170,16 +135,6 @@ Pesquisa insere_chave(long chave,long byteoffset,FILE *arquivo,int rrn_atual,int
             escreve_no_arvb(arquivo,SPLIT.PAG1);    //REESCREVE A PAGINA QUE PERMANECE
             fseek(arquivo,0,SEEK_END);
             escreve_no_arvb(arquivo,SPLIT.PAG2);    //ESCREVE A PAGINA FOLHA CRIADA
-
-            printf("SPLIT FOLHA: %ld\n",chave);
-            fseek(arquivo,93*(1+rrn_atual),SEEK_SET);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            fseek(arquivo,-93,SEEK_END);
-            PAGINA=le_no_arvb(arquivo);
-            print(PAGINA);
-            printf("Promovido: %ld",SPLIT.C_promovido);
-            printf("\n");
 
 
             PESQUISA.chave_promovida=SPLIT.C_promovido;
@@ -239,26 +194,30 @@ Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh
             Prs[i]=PAGINA.Pr[i];
         }
     }
-    Ps[m+1]=pont_dir_p;     //coloca o dado que esta tentando ser inserido para ordenacao
-    Cs[m]=chave_p;
-    Prs[m]=byoff_p;
+    Ps[m]=pont_dir_p;     //coloca o dado que esta tentando ser inserido para ordenacao
+    Cs[m-1]=chave_p;
+    Prs[m-1]=byoff_p;
 
 
-    for (int i = 0; i < m+1 - 1; i++) {
-        for (int j = 0; j < m+1 - i - 1; j++) {
+    for (int i = 1; i < m+1; i++) {
+        for (int j = 1; j < m+1 - i; j++) {
             //reordena com bubblesort (sim), fazendo com que os ponteiros a direita de cada chave sejam trocados
-            if (Cs[j] > Cs[j + 1]){ 
-                C_aux=Cs[j];
-                P_aux=Ps[j+1];
-                Pr_aux=Prs[j];
+            if (Cs[j-1] > Cs[j]){ 
 
-                Cs[j]=Cs[j+1];
-                Ps[j+1]=Ps[j+2];
-                Prs[j]=Prs[j+1];
-                
-                Cs[j+1]=C_aux;
-                Ps[j+2]=P_aux;
-                Prs[j+1]=Pr_aux;
+                P_aux=Ps[j];
+                Ps[j]=Ps[j+1];
+                Ps[j+1]=P_aux;
+
+                if(j<m){
+                    C_aux=Cs[j-1];
+                    Cs[j-1]=Cs[j];
+                    Cs[j]=C_aux;
+
+
+                    Pr_aux=Prs[j-1];
+                    Prs[j-1]=Prs[j]; 
+                    Prs[j]=Pr_aux;
+                }
             }
 
 

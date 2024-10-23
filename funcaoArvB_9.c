@@ -103,6 +103,7 @@ void insere_novo_dado()
         {
 
             fseek(arquivodados, 1600 + (160 * topo), SEEK_SET); // fseek na posicao com remocao
+            byteoffset = (long)(1600 + (topo)*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
             DADO = le_registro(arquivodados);                   // le a posicao para armazenar o valor de topo
             aux = topo;                                         // salva o topo antigo para caso aconteca um problema na leitura de dados do usuario
             topo = DADO.encadeamento;                           // armazena o valor de topo novo
@@ -111,7 +112,7 @@ void insere_novo_dado()
             linha = strdup(DADO.variavel);  // separa o campo do nome
             nome = strsep(&linha, "#");
             chave=converteNome(nome);       //cria a chave com a funcao fornecida
-            byteoffset = (long)(1600 + topo*160);     //calcula o byteoffset relativo ao registro que tera a chave inserida
+            
 
             if (DADO.removido != '3') // DADO.removido usado como flag, se houver uma inconsistencia na leitura de dados eles nao sao inseridos
             {
