@@ -1,7 +1,7 @@
 #include "./funcoesArvB.h"
 #include "./funcoesCriadas.h"
 
-//funcao que reserva o espaco de cabecalho do arquivo de arvore B
+//funcao que escreve o cabecalho da arvore B
 void escreve_cabecalho_arvb(FILE *arquivo,CabecalhoArvB CAB){
     int i;
     char lixo='$';
@@ -12,7 +12,7 @@ void escreve_cabecalho_arvb(FILE *arquivo,CabecalhoArvB CAB){
     for(i=0;i<84;i++)
         fwrite(&lixo, 1, 1, arquivo);
 }
-
+//funcao que escreve uma pagina da arvore B
 void escreve_no_arvb(FILE *arquivo,No no){
     int i;
     
@@ -29,7 +29,7 @@ void escreve_no_arvb(FILE *arquivo,No no){
         }
     }
 }
-
+//funcao que le o cabecalho de uma arvore B e retorna esse cabecalho
 CabecalhoArvB le_cab_arvb(FILE *arquivo){
     CabecalhoArvB CAB;
     fread(&CAB.status, 1, 1, arquivo);
@@ -38,7 +38,7 @@ CabecalhoArvB le_cab_arvb(FILE *arquivo){
 
     return CAB;
 }
-
+//funcao que le uma pagina de uma arvore B e retorna essa pagina
 No le_no_arvb(FILE *arquivo){
     int i;
     No no;
@@ -49,6 +49,7 @@ No le_no_arvb(FILE *arquivo){
     for(i=0;i<m;i++){
         fread(&no.P[i], 4, 1, arquivo);
 
+        //nao realiza a leitura da chave e dos byteoffsets quando chegar no fim do vetor (que tem tamanho m-1)
         if(i!=m-1){
             fread(&no.C[i], 8, 1, arquivo);
             fread(&no.Pr[i], 8, 1, arquivo);
