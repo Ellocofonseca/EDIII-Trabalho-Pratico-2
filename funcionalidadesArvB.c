@@ -86,9 +86,15 @@ void pesquisa(){
     if(PESQUISA.encontrado==1){ //se tiver encontrado o registro, fseek na posicao dentro do arquivo de dados, le o dado e exibe ele
         fseek(arquivodados,PESQUISA.BYOFF_dado,SEEK_SET);
         DADO=le_registro(arquivodados);                     //as duas funcoes sao do trabalho anterior
-        exibe_registro(DADO);
         fclose(arquivodados);                               //fecha o arquivo de dados
     }
+
+    if(DADO.removido=='1'){
+        printf(ERRO_REGISTRO);
+    }else if(DADO.removido=='0'){
+        exibe_registro(DADO);
+    }
+    
     
 }
 
