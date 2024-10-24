@@ -182,6 +182,22 @@ No reordena_pagina(No PAGINA)
     return PAGINA;
 }
 
+
+//a funcao de split recebe uma pagina cheia e os dados de uma chave que precisa ser inserida mas nao ha espaco, alem de indicacoes se a pagina eh folha/raiz
+//a operacao da funcao funciona da seguinte maneira:
+//uma "pagina" de ordem m+1 eh criada para que entao a chave anterior que nao cabia seja inserida nesse vetor auxiliar
+//o vetor auxiliar eh entao ordenado
+
+//apos a ordenacao do vetor os dados dele sao separados em 3 partes
+//a primeira parte eh a PAG1 (pagina que sofreu o split e permanecera no mesmo lugar do arquivo apos ser atualizada, recebe os dados antes do no promovido)
+//a segunda parte eh a PAG2 (pagina irma da pagina que sofreu o split, que recebe os dados depois do no promovido)
+//a terceira parte (se o split for na raiz) eh a PAG3 que eh a pagina raiz nova do arquivo, que recebe o no promovido
+//se o split nao for em uma raiz entao o codigo retorna apenas os dados promovidos em si para que a recursao possa continuar se propagando em direcao a raiz
+
+//VETOR AUXILIAR ORDENADO:  P1 C1 Pr1 | P2 C2 Pr2 | P3 C3 Pr3 | P4 C4 Pr4 | P5 C5 Pr5 | P6
+
+
+
 Split ordena_split(No PAGINA, long chave_p, long byoff_p, int pont_dir_p, int eh_raiz, int eh_folha, FILE *arquivo){
     Split SPLIT;
     int i,j;
